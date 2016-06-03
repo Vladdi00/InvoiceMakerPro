@@ -44,7 +44,8 @@
                         command.Destroy();
                     }).Title("Actions").Width(325);
                     columns.Bound(c => c.Store.Name).Hidden();
-                    //columns.Bound(c => c.InvoiceDetails).ClientTemplate("#=generateTemplate(InvoiceDetails)#").Title("Invoice Details");
+                    columns.Bound(c => c.InvoiceDetails).ClientTemplate("#=generateTemplate(InvoiceDetails)#").Title("Invoice Details").Hidden();
+                    // remove Hidden attribute from this column to also show each invoices' articles on the Index page
                 })
                 .Resizable(c => c.Columns(true))
                 .Selectable(s => s.Enabled(true).Mode(GridSelectionMode.Single))

@@ -361,7 +361,7 @@ function searchGrid() {
     }
 }
 
-// generate client template function to display each invoice's articles in the grid
+// generate client template function to display each invoice's articles on the Index page grid
 function generateTemplate(InvoiceDetails) {
     var invoiceDetails = Array.from(InvoiceDetails);
     var template = "<ul>";
