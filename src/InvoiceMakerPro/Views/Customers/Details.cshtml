@@ -1,0 +1,144 @@
+@model InvoiceMakerPro.Models.Customer
+
+@{
+    ViewData["Title"] = "Customer Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<ul class="breadcrumb">
+    <li><a asp-controller="Home" asp-action="Index">Home</a></li>
+    <li><a asp-controller="Customers" asp-action="Index">Customers</a></li>
+    <li class="active" style="color: black">Details</li>
+</ul>
+
+
+<div>
+    <hr />
+    <h3>@(Model.Name) Details</h3>
+    <dl class="dl-horizontal spaced-lines">
+        @Html.HiddenFor(m => m.CustomerId, new { id = "customerId" })
+        <dt>
+            @Html.DisplayNameFor(model => model.CompanyNumber)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CompanyNumber)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Address)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Address)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.CP)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.CP)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.City)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.City)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.ContactPerson)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.ContactPerson)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Fax)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Fax)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Notes)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Notes)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Phone1)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Phone1)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.Phone2)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.Phone2)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.VAT)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.VAT)
+        </dd>
+    </dl>
+</div>
+<div>
+    @(Html.Kendo().Grid<Invoice>()
+        .Name("gridInvoices")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.InvoiceNumber).Title("#").Filterable(false);
+            columns.Bound(c => c.InvoiceState).Title("Status").Filterable(c => c.CheckAll(true).Multi(true));
+            columns.Bound(c => c.TimeStamp).Format("{0:dd/MM/yyyy}").Width(100);
+            columns.Bound(c => c.VATAmount).Width(50).Format("{0:n2} NOK").Title("VAT Amount").HtmlAttributes(new { style = "text-align: right;" }).FooterHtmlAttributes(new { style = "text-align: right;" }).ClientFooterTemplate("#=kendo.toString(sum,'n2')# NOK");
+            columns.Bound(c => c.TotalWithVAT).Width(50).Format("{0:n2} NOK").Title("Total with VAT").HtmlAttributes(new { style = "text-align: right;" }).FooterHtmlAttributes(new { style = "text-align: right;" }).ClientFooterTemplate("#=kendo.toString(sum,'n2')# NOK");
+            columns.Command(command =>
+            {
+                command.Custom("editItem").Text("Edit").Click("editInvoice");
+                command.Custom("print").Text("Print").Click("printFromGrid");
+                command.Custom("release").Text("Release").Click("releaseInvoice");
+                command.Destroy();
+            }).Title("Actions").Width(325);
+        })
+        .Resizable(c => c.Columns(true))
+        .Selectable(s => s.Enabled(true).Mode(GridSelectionMode.Single))
+        .Sortable(true)
+        .Filterable(f => f.Enabled(true).Mode(GridFilterMode.Menu))
+        .Groupable(false)
+        .Pageable(p => p.Enabled(true).PageSizes(true).Refresh(true))
+        .Events(e =>
+        {
+            e.DataBound("onDataBoundGridTemplate");
+        })
+        .DataSource(dataSource => dataSource
+            .Custom().PageSize(20)
+            .Schema(s => s.Model(m =>
+            {
+                m.Id(i => i.InvoiceId);
+            })).Aggregates(a =>
+            {
+                a.Add(t => t.VATAmount).Sum();
+                a.Add(t => t.TotalWithVAT).Sum();
+            })
+            .Transport(t => t
+                .ParameterMap("parameterWrapFunction")
+                .Read(r => r
+                    .Action("GetCustomerInvoices", "Invoices", new { CustomerId = Model.CustomerId }))
+                .Destroy(r => r
+                    .Action("DeleteInvoice", "Invoices").DataType("json")))
+        ))
+</div>
+
+
+<p>
+    <a asp-action="Edit" asp-route-id="@Model.CustomerId" class="k-button k-primary btn btn-default">Edit</a>
+    <a asp-action="Index" class="btn btn-default k-button">Back to List</a>
+</p>
