@@ -3,7 +3,6 @@ var URL_PRINT_INVOICE = "/Invoices/Print";
 var URL_EDIT_INVOICE = "/Invoices/EditInvoice";
 var URL_NEW_INVOICE = "/Invoices/EditInvoice";
 var URL_RELEASE_INVOICE = "Invoices/ReleaseInvoice";
-var URL_GETCUSTOMERINVOICES_URL = "Invoices/GetCustomerInvoices";
 
 $(document).ready(function () {
     setupHeader();
@@ -395,5 +394,5 @@ function switchVAT(e) {
 function onSelectCustomer(e) {
     var dd = $("#Customer").data("kendoDropDownList");
     var value = dd.dataItem().VAT;
-    $("#CustomerVATLabel").val(value);
+    $("#CustomerVATLabel").text(value + " %");
 }
